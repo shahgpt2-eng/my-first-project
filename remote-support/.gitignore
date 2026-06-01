@@ -1,0 +1,9 @@
+# Runtime data — never commit the database, certs, or secrets
+data/meshcentral.db*
+data/*.key
+data/*.crt
+data/agentserver-cert-*
+data/webserver-cert-*
+data/root-cert-*
+user_files/
+backups/

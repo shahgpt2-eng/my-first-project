@@ -1,0 +1,27 @@
+# MeshCentral — self-hosted remote support / remote desktop
+# Gives you a web dashboard + "share a link to a session" with full screen
+# control, file transfer, and CONSENT PROMPTS for the person at the computer.
+#
+# Quick start (on your own server / AWS box):
+#   1. Edit data/config.json -> set "cert" to your domain or public IP
+#   2. docker compose up -d
+#   3. Open https://YOUR_DOMAIN  (first account you create becomes admin)
+#   4. Create a "Device Group", turn ON consent (see README), then download
+#      the agent installer from that group and run it on each company device.
+#
+# See README.md for the full walkthrough, including the consent settings.
+
+services:
+  meshcentral:
+    image: ghcr.io/ylianst/meshcentral:latest
+    container_name: meshcentral
+    restart: unless-stopped
+    ports:
+      - "443:443"   # HTTPS web UI + agent connections
+      - "80:80"     # HTTP -> redirects to HTTPS, and Let's Encrypt validation
+    volumes:
+      - ./data:/opt/meshcentral/meshcentral-data       # config.json + database live here
+      - ./user_files:/opt/meshcentral/meshcentral-files
+      - ./backups:/opt/meshcentral/meshcentral-backups
+    # If you put this behind nginx/Caddy/ALB instead of exposing 443 directly,
+    # set "TLSOFFLOAD" in config.json and only expose the internal port.

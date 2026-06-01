@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
+  "settings": {
+    "_comment": "Set 'cert' to the public domain or IP that staff devices will reach. For an IP-only deploy you can use the IP, but a real domain + Let's Encrypt is strongly recommended.",
+    "cert": "REPLACE_WITH_YOUR_DOMAIN_OR_PUBLIC_IP",
+    "port": 443,
+    "redirPort": 80,
+    "WANonly": true,
+    "_sessionKeyComment": "Generate a long random string once and keep it secret. e.g. `openssl rand -hex 32`",
+    "sessionKey": "REPLACE_WITH_A_LONG_RANDOM_SECRET"
+  },
+  "domains": {
+    "": {
+      "title": "Company Remote Support",
+      "title2": "IT Helpdesk",
+      "_newAccountsComment": "Keep this false so randoms can't sign up. Create staff/admin accounts yourself.",
+      "newAccounts": false,
+      "userNameIsEmail": true,
+      "_consentComment": "Consent is enforced per Device Group in the web UI (see README step 5). These domain defaults make notifications visible across the org.",
+      "agentInviteCodes": true
+    }
+  },
+  "letsencrypt": {
+    "_comment": "Uncomment and set your email + names to get a free trusted certificate automatically. Requires port 80 reachable from the internet.",
+    "__email": "it@yourcompany.com",
+    "__names": "REPLACE_WITH_YOUR_DOMAIN",
+    "__production": false
+  }
+}
