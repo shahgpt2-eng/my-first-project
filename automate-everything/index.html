@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automate Everything</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #fff;
+      background: #0a0a0a;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Hero section with parallax and animated gradient */
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .parallax-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 120%;
+      height: 120%;
+      background: linear-gradient(45deg, #ff0080, #8000ff, #0080ff, #80ff00);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      transform: translateZ(-1px) scale(1.2);
+      z-index: -2;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero-content {
+      text-align: center;
+      z-index: 1;
+      max-width: 800px;
+      padding: 0 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeUp 1.2s ease 0.3s forwards;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeUp 1.2s ease 0.6s forwards;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeUp 1.2s ease 0.9s forwards;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(255, 255, 255, 0.25);
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Sections with scroll-triggered animations */
+    section {
+      min-height: 100vh;
+      padding: 6rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+    }
+
+    .section-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(20, 20, 20, 0.8);
+      z-index: -1;
+    }
+
+    .section-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .section-content {
+      max-width: 700px;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+      transition-delay: 0.2s;
+    }
+
+    .visible .section-title,
+    .visible .section-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Feature cards with staggered scroll animations */
+    .features {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 3rem;
+    }
+
+    .feature {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 300px;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      opacity: 0;
+      transform: translateY(40px) rotateX(10deg);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .feature:nth-child(1) { transition-delay: 0.1s; }
+    .feature:nth-child(2) { transition-delay: 0.2s; }
+    .feature:nth-child(3) { transition-delay: 0.3s; }
+
+    .visible .feature {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
+
+    .feature:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .feature h3 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    /* Stats section with counter animation */
+    .stats {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 3rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #80ff00;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      background: #111;
+    }
+
+    /* Parallax effect on scroll */
+    .parallax {
+      transform: translateY(var(--scroll-offset, 0px));
+      transition: transform 0.1s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero section -->
+  <section class="hero">
+    <div class="parallax-bg"></div>
+    <div class="hero-content">
+      <h1>Automate Everything</h1>
+      <p>Let machines do the work. Focus on what matters.</p>
+      <a href="#features" class="cta-button">See How It Works</a>
+    </div>
+  </section>
+
+  <!-- Features section -->
+  <section id="features">
+    <div class="section-bg"></div>
+    <h2 class="section-title">Intelligent Automation</h2>
+    <div class="section-content">
+      <p>From code to deployment, our systems handle the repetitive work so you can innovate faster.</p>
+      <div class="features">
+        <div class="feature">
+          <h3>Code Generation</h3>
+          <p>AI writes, tests, and refactors code across your stack.</p>
+        </div>
+        <div class="feature">
+          <h3>CI/CD Automation</h3>
+          <p>Automated testing, builds, and deployments with rollback safety.</p>
+        </div>
+        <div class="feature">
+          <h3>Infrastructure as Code</h3>
+          <p>Spin up and tear down environments on demand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats section -->
+  <section>
+    <div class="section-bg"></div>
+    <h2 class="section-title">By the Numbers</h2>
+    <div class="section-content">
+      <p>See the impact of automation across teams and organizations.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number" data-target="98">0</div>
+          <div>Faster Deployments</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" data-target="75">0</div>
+          <div>Fewer Bugs</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" data-target="24">0</div>
+          <div>Hours Saved / Week</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section>
+    <div class="section-bg"></div>
+    <h2 class="section-title">Ready to Automate?</h2>
+    <div class="section-content">
+      <p>Start automating your workflows today and reclaim your time.</p>
+      <a href="#features" class="cta-button">Get Started</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>Automate Everything &copy; 2026</p>
+  </footer>
+
+  <script>
+    // Scroll-triggered animations
+    const observerOptions = {
+      threshold: 0.2,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.section-title, .section-content, .feature').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Simple parallax on hero background
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const parallaxBg = document.querySelector('.parallax-bg');
+      if (parallaxBg) {
+        parallaxBg.style.transform = `translateY(${scrolled * 0.5}px) scale(1.2)`;
+      }
+    });
+
+    // Animated counters
+    const counters = document.querySelectorAll('.stat-number');
+    const observerCounters = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = +entry.target.getAttribute('data-target');
+          const duration = 2000; // ms
+          const step = target / (duration / 16);
+          let current = 0;
+
+          const updateCounter = () => {
+            current += step;
+            if (current < target) {
+              entry.target.textContent = Math.floor(current);
+              requestAnimationFrame(updateCounter);
+            } else {
+              entry.target.textContent = target;
+            }
+          };
+          updateCounter();
+          observerCounters.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(counter => observerCounters.observe(counter));
+  </script>
+</body>
+</html>
