@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Motion Lab</title>
+  <style>
+    :root {
+      --bg: #04040a;
+      --panel: rgba(255, 255, 255, 0.07);
+      --panel-strong: rgba(255, 255, 255, 0.13);
+      --text: #f7f7ff;
+      --muted: rgba(247, 247, 255, 0.68);
+      --line: rgba(255, 255, 255, 0.14);
+      --hot: #ff2cdf;
+      --cyan: #19d7ff;
+      --lime: #a7ff3c;
+      --violet: #8b5cff;
+      --orange: #ff9f43;
+      --radius: 28px;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.44);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 16% 10%, rgba(255, 44, 223, 0.22), transparent 28rem),
+        radial-gradient(circle at 82% 6%, rgba(25, 215, 255, 0.18), transparent 30rem),
+        radial-gradient(circle at 50% 80%, rgba(139, 92, 255, 0.22), transparent 42rem),
+        var(--bg);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      z-index: 1;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: radial-gradient(circle at center, black, transparent 75%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(rgba(255, 255, 255, 0.035) 50%, transparent 50%);
+      background-size: 100% 4px;
+      mix-blend-mode: overlay;
+      opacity: 0.35;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 4px;
+      z-index: 1000;
+      background: linear-gradient(90deg, var(--hot), var(--cyan), var(--lime));
+      box-shadow: 0 0 24px rgba(25, 215, 255, 0.75);
+    }
+
+    .cursor-glow {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      left: -210px;
+      top: -210px;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(25, 215, 255, 0.18), rgba(255, 44, 223, 0.1) 38%, transparent 66%);
+      filter: blur(12px);
+      transform: translate3d(var(--x, 50vw), var(--y, 50vh), 0);
+    }
+
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.78;
+      z-index: 0;
+    }
+
+    .nav {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1120px, calc(100% - 28px));
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px 12px 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(4, 4, 10, 0.62);
+      backdrop-filter: blur(22px);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.22);
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 30% 30%, #fff, transparent 24%),
+        conic-gradient(from 90deg, var(--hot), var(--cyan), var(--lime), var(--violet), var(--hot));
+      box-shadow: 0 0 30px rgba(255, 44, 223, 0.42);
+      animation: spin 7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-radius: 999px;
+      transition: 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+      font-weight: 700;
+    }
+
+    .btn:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 18px 45px rgba(25, 215, 255, 0.18);
+    }
+
+    .btn-primary {
+      color: #020205;
+      background: linear-gradient(135deg, #fff, #bff9ff 38%, #cfff7c 100%);
+      border: 0;
+    }
+
+    .section {
+      position: relative;
+      z-index: 3;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      align-items: center;
+      gap: clamp(2rem, 4vw, 5rem);
+      padding-top: 110px;
+      padding-bottom: 80px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.86rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 0 rgba(167, 255, 60, 0.72);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 14px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+
+    h1, h2, h3 {
+      line-height: 0.96;
+      letter-spacing: -0.07em;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.25rem, 9vw, 7.7rem);
+      max-width: 870px;
+      margin-bottom: 24px;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(110deg, #fff 5%, #83efff 28%, #ff73e8 55%, #caff5b 86%);
+      background-size: 220% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      animation: shimmer 5s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hero-copy {
+      max-width: 670px;
+      color: var(--muted);
+      font-size: clamp(1.02rem, 2vw, 1.22rem);
+      margin-bottom: 32px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 26px;
+      flex-wrap: wrap;
+      margin-top: 38px;
+      color: var(--muted);
+    }
+
+    .hero-meta strong {
+      display: block;
+      color: var(--text);
+      font-size: 1.4rem;
+      letter-spacing: -0.04em;
+    }
+
+    .stage-wrap {
+      position: relative;
+      min-height: 620px;
+      perspective: 1400px;
+      transform-style: preserve-3d;
+    }
+
+    .stage-card {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: min(520px, 88vw);
+      height: 620px;
+      transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-36deg);
+      transform-style: preserve-3d;
+      border-radius: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background:
+        linear-gradient(140deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+        radial-gradient(circle at 20% 20%, rgba(255, 44, 223, 0.28), transparent 32%),
+        radial-gradient(circle at 80% 50%, rgba(25, 215, 255, 0.25), transparent 32%),
+        rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow), 0 0 100px rgba(139, 92, 255, 0.18);
+      overflow: hidden;
+      animation: floatCard 7s ease-in-out infinite;
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-36deg) translateY(0); }
+      50% { transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-36deg) translateY(-22px); }
+    }
+
+    .stage-card::before {
+      content: "";
+      position: absolute;
+      inset: 28px;
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(0, 0, 0, 0.16);
+    }
+
+    .stage-card::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(from 180deg, transparent, rgba(255, 255, 255, 0.38), transparent 30%);
+      animation: sweep 4.8s linear infinite;
+    }
+
+    @keyframes sweep {
+      to { transform: rotate(360deg); }
+    }
+
+    .orbit {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      transform-style: preserve-3d;
+      animation: orbitSpin 16s linear infinite;
+    }
+
+    .orbit.one {
+      width: 510px;
+      height: 510px;
+      transform: translate(-50%, -50%) rotateX(72deg) rotateY(14deg);
+    }
+
+    .orbit.two {
+      width: 390px;
+      height: 390px;
+      transform: translate(-50%, -50%) rotateX(62deg) rotateY(-28deg);
+      animation-duration: 10s;
+      animation-direction: reverse;
+    }
+
+    .orbit.three {
+      width: 270px;
+      height: 270px;
+      transform: translate(-50%, -50%) rotateX(74deg) rotateY(48deg);
+      animation-duration: 8s;
+    }
+
+    @keyframes orbitSpin {
+      from { rotate: 0deg; }
+      to { rotate: 360deg; }
+    }
+
+    .orb {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cyan);
+      box-shadow: 0 0 22px var(--cyan), 0 0 60px rgba(25, 215, 255, 0.6);
+    }
+
+    .orbit.two .orb { background: var(--hot); box-shadow: 0 0 22px var(--hot), 0 0 60px rgba(255, 44, 223, 0.5); }
+    .orbit.three .orb { background: var(--lime); box-shadow: 0 0 22px var(--lime), 0 0 60px rgba(167, 255, 60, 0.5); }
+
+    .floating-ui {
+      position: absolute;
+      display: grid;
+      gap: 9px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 22px;
+      background: rgba(2, 2, 5, 0.68);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+      animation: floatUi 5.6s ease-in-out infinite;
+    }
+
+    .floating-ui span {
+      display: block;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      overflow: hidden;
+    }
+
+    .floating-ui span::before {
+      content: "";
+      display: block;
+      height: 100%;
+      width: var(--w);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--hot), var(--cyan));
+    }
+
+    .ui-one { width: 180px; top: 95px; left: 0; --w: 72%; }
+    .ui-two { width: 210px; right: 0; bottom: 110px; --w: 86%; animation-delay: -1.2s; }
+    .ui-three { width: 168px; right: 35px; top: 28px; --w: 58%; animation-delay: -2.2s; }
+
+    @keyframes floatUi {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(1.5deg); }
+    }
+
+    .marquee {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      width: 100%;
+      overflow: hidden;
+      padding: 24px 0;
+      border-block: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .marquee-track {
+      display: flex;
+      flex-shrink: 0;
+      gap: 18px;
+      min-width: 100%;
+      animation: marquee 24s linear infinite;
+    }
+
+    .marquee b {
+      font-size: clamp(2rem, 4vw, 4rem);
+      letter-spacing: -0.06em;
+      color: rgba(255, 255, 255, 0.15);
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+      white-space: nowrap;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .block {
+      padding: clamp(5rem, 9vw, 9rem) 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 48px;
+    }
+
+    .section-kicker {
+      color: var(--lime);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+
+    .section-title {
+      font-size: clamp(2.6rem, 6vw, 5.8rem);
+      max-width: 780px;
+    }
+
+    .section-lede {
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.17rem);
+      max-width: 650px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .motion-card {
+      position: relative;
+      min-height: 360px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(255, 255, 255, 0.055);
+      backdrop-filter: blur(24px);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+    }
+
+    .motion-card:hover {
+      border-color: rgba(255, 255, 255, 0.32);
+      background: rgba(255, 255, 255, 0.085);
+    }
+
+    .motion-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      opacity: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(25, 215, 255, 0.32), transparent 34%);
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .motion-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-number {
+      position: relative;
+      z-index: 1;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 17px;
+      color: #030307;
+      background: linear-gradient(135deg, var(--cyan), var(--lime));
+      font-weight: 900;
+      box-shadow: 0 18px 48px rgba(25, 215, 255, 0.18);
+    }
+
+    .motion-card h3 {
+      position: relative;
+      z-index: 1;
+      margin-top: 86px;
+      font-size: 2rem;
+      letter-spacing: -0.055em;
+    }
+
+    .motion-card p {
+      position: relative;
+      z-index: 1;
+      margin-top: 14px;
+      color: var(--muted);
+    }
+
+    .mini-orbit {
+      position: absolute;
+      right: -70px;
+      top: -70px;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      animation: spin 12s linear infinite;
+    }
+
+    .mini-orbit::after {
+      content: "";
+      position: absolute;
+      top: 25px;
+      left: 18px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--hot);
+      box-shadow: 0 0 24px var(--hot);
+    }
+
+    .showcase {
+      display: grid;
+      grid-template-columns: 0.82fr 1.18fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 110px;
+      min-height: 620px;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 44, 223, 0.18), transparent 36%),
+        radial-gradient(circle at 80% 20%, rgba(25, 215, 255, 0.18), transparent 34%),
+        rgba(255, 255, 255, 0.055);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .device {
+      position: absolute;
+      inset: 42px;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(0, 0, 0, 0.36);
+      overflow: hidden;
+    }
+
+    .device::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 48%, rgba(255, 255, 255, 0.08) 49% 51%, transparent 52%),
+        linear-gradient(transparent 0 48%, rgba(255, 255, 255, 0.08) 49% 51%, transparent 52%);
+      background-size: 70px 70px;
+      opacity: 0.45;
+    }
+
+    .motion-path {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .motion-path path {
+      fill: none;
+      stroke: url(#motionGradient);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 1100;
+      stroke-dashoffset: 1100;
+      animation: drawPath 4s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 14px rgba(25, 215, 255, 0.6));
+    }
+
+    @keyframes drawPath {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .kinetic-dot {
+      position: absolute;
+      left: 10%;
+      top: 70%;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 30px #fff, 0 0 80px var(--cyan);
+      offset-path: path("M 40 430 C 160 120, 360 100, 440 260 S 240 520, 470 430");
+      animation: moveDot 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes moveDot {
+      to { offset-distance: 100%; }
+    }
+
+    .scroll-scenes {
+      display: grid;
+      gap: 24px;
+    }
+
+    .scene {
+      min-height: 360px;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      padding: 34px;
+      background: linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scene::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -70px;
+      top: -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--glow), transparent 65%);
+      filter: blur(4px);
+      opacity: 0.7;
+      transform: scale(var(--scene-scale, 0.6));
+      transition: transform 0.8s ease;
+    }
+
+    .scene.active::before {
+      --scene-scale: 1;
+    }
+
+    .scene:nth-child(1) { --glow: rgba(255, 44, 223, 0.45); }
+    .scene:nth-child(2) { --glow: rgba(25, 215, 255, 0.45); }
+    .scene:nth-child(3) { --glow: rgba(167, 255, 60, 0.38); }
+
+    .scene h3 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scene p {
+      color: var(--muted);
+      max-width: 620px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stats-band {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat {
+      padding: 28px;
+      min-height: 210px;
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.055);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stat::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -40% -20%;
+      height: 120px;
+      background: linear-gradient(90deg, var(--hot), var(--cyan), var(--lime));
+      filter: blur(54px);
+      opacity: 0.22;
+    }
+
+    .stat strong {
+      font-size: clamp(2.4rem, 5vw, 4.4rem);
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+    }
+
+    .stat span {
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    .final-cta {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(4rem, 7vw, 7rem);
+      border-radius: 46px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255, 44, 223, 0.24), transparent 32%),
+        radial-gradient(circle at 86% 30%, rgba(25, 215, 255, 0.22), transparent 32%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .final-cta h2 {
+      font-size: clamp(3rem, 8vw, 7rem);
+      max-width: 960px;
+      margin: 0 auto 24px;
+    }
+
+    .final-cta p {
+      color: var(--muted);
+      max-width: 660px;
+      margin: 0 auto 30px;
+      font-size: 1.12rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(42px) scale(0.98);
+      transition: opacity 0.9s cubic-bezier(.2,.8,.2,1), transform 0.9s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .split-line {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: top;
+    }
+
+    .split-line span {
+      display: inline-block;
+      transform: translateY(112%);
+      animation: lineIn 1s cubic-bezier(.2,.8,.2,1) forwards;
+      animation-delay: var(--d, 0s);
+    }
+
+    @keyframes lineIn {
+      to { transform: translateY(0); }
+    }
+
+    footer {
+      position: relative;
+      z-index: 3;
+      padding: 40px 0 56px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .hero, .section-head, .showcase { grid-template-columns: 1fr; }
+      .stage-wrap { min-height: 520px; order: -1; }
+      .grid, .stats-band { grid-template-columns: 1fr 1fr; }
+      .sticky-panel { position: relative; top: auto; min-height: 520px; }
+    }
+
+    @media (max-width: 620px) {
+      .nav { top: 10px; }
+      .brand span { display: none; }
+      .hero { padding-top: 100px; }
+      .stage-wrap { min-height: 430px; }
+      .stage-card { height: 470px; width: 360px; }
+      .orbit.one { width: 350px; height: 350px; }
+      .orbit.two { width: 270px; height: 270px; }
+      .orbit.three { width: 190px; height: 190px; }
+      .floating-ui { display: none; }
+      .grid, .stats-band { grid-template-columns: 1fr; }
+      .motion-card { min-height: 300px; }
+      .device { inset: 24px; }
+      .final-cta { padding: 3rem 1.2rem; border-radius: 30px; }
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <nav class="nav">
+    <a class="brand" href="#top" aria-label="Advanced Motion Lab home">
+      <span class="brand-mark"></span>
+      <span>Advanced Motion Lab</span>
+    </a>
+    <div class="nav-links">
+      <a href="#systems">Systems</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#impact">Impact</a>
+    </div>
+    <a class="btn btn-primary" href="#start">Start Motion</a>
+  </nav>
+
+  <main id="top">
+    <section class="section hero">
+      <div class="hero-copy-wrap">
+        <div class="eyebrow"><span class="pulse-dot"></span> High-end interactive motion design</div>
+        <h1>
+          <span class="split-line"><span style="--d:.05s">Turn static pages</span></span>
+          <span class="split-line"><span class="gradient-text" style="--d:.18s">into cinematic</span></span>
+          <span class="split-line"><span style="--d:.31s">web experiences.</span></span>
+        </h1>
+        <p class="hero-copy reveal">A premium landing page concept with canvas particles, kinetic typography, parallax layers, 3D cards, scrolling scenes, animated SVG motion paths, counters, and responsive micro-interactions.</p>
+        <div class="hero-actions reveal">
+          <a class="btn btn-primary" href="#showcase">View the motion system</a>
+          <a class="btn" href="#systems">Explore sections</a>
+        </div>
+        <div class="hero-meta reveal">
+          <div><strong class="counter" data-target="60">0</strong> fps-inspired motion</div>
+          <div><strong class="counter" data-target="14">0</strong> animated layers</div>
+          <div><strong class="counter" data-target="100">0</strong> responsive build</div>
+        </div>
+      </div>
+
+      <div class="stage-wrap" aria-hidden="true">
+        <div class="stage-card"></div>
+        <div class="orbit one"><span class="orb"></span></div>
+        <div class="orbit two"><span class="orb"></span></div>
+        <div class="orbit three"><span class="orb"></span></div>
+        <div class="floating-ui ui-one"><span style="--w:72%"></span><span style="--w:48%"></span><span style="--w:86%"></span></div>
+        <div class="floating-ui ui-two"><span style="--w:86%"></span><span style="--w:52%"></span><span style="--w:68%"></span></div>
+        <div class="floating-ui ui-three"><span style="--w:58%"></span><span style="--w:74%"></span><span style="--w:42%"></span></div>
+      </div>
+    </section>
+
+    <section class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <b>PARALLAX</b><b>SCROLL REVEALS</b><b>3D HOVER</b><b>CANVAS PARTICLES</b><b>KINETIC UI</b><b>SVG MOTION</b>
+        <b>PARALLAX</b><b>SCROLL REVEALS</b><b>3D HOVER</b><b>CANVAS PARTICLES</b><b>KINETIC UI</b><b>SVG MOTION</b>
+      </div>
+    </section>
+
+    <section class="section block" id="systems">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">Design system</div>
+          <h2 class="section-title">Motion that feels expensive.</h2>
+        </div>
+        <p class="section-lede">The page is built around motion principles that make a website feel polished: depth, timing, reveal hierarchy, responsive feedback, and interactive energy.</p>
+      </div>
+
+      <div class="grid">
+        <article class="motion-card tilt reveal">
+          <div class="mini-orbit"></div>
+          <div class="card-number">01</div>
+          <h3>Depth layers</h3>
+          <p>Floating glass panels, orbiting elements, cursor light, particles, and gradient fields create an animated spatial environment.</p>
+        </article>
+        <article class="motion-card tilt reveal">
+          <div class="mini-orbit"></div>
+          <div class="card-number">02</div>
+          <h3>Scroll rhythm</h3>
+          <p>Each section reveals with staggered timing, sticky motion panels, progress tracking, and scene activation as the user scrolls.</p>
+        </article>
+        <article class="motion-card tilt reveal">
+          <div class="mini-orbit"></div>
+          <div class="card-number">03</div>
+          <h3>Micro feedback</h3>
+          <p>Buttons lift, cards tilt, light follows the pointer, numbers count up, paths draw, and visual states react instantly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section block" id="showcase">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">Scroll showcase</div>
+          <h2 class="section-title">A moving product story.</h2>
+        </div>
+        <p class="section-lede">A premium motion graphics page should not just move randomly. It should guide the eye, create suspense, and make each section feel like a scene.</p>
+      </div>
+
+      <div class="showcase">
+        <div class="sticky-panel reveal">
+          <div class="device">
+            <svg class="motion-path" viewBox="0 0 520 560" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="motionGradient" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#ff2cdf" />
+                  <stop offset="45%" stop-color="#19d7ff" />
+                  <stop offset="100%" stop-color="#a7ff3c" />
+                </linearGradient>
+              </defs>
+              <path d="M 40 430 C 160 120, 360 100, 440 260 S 240 520, 470 430" />
+            </svg>
+            <div class="kinetic-dot"></div>
+          </div>
+        </div>
+
+        <div class="scroll-scenes">
+          <article class="scene reveal">
+            <h3>Scene 01: attract</h3>
+            <p>Open with a cinematic hero that instantly signals premium value through depth, glowing gradients, and continuous ambient movement.</p>
+          </article>
+          <article class="scene reveal">
+            <h3>Scene 02: explain</h3>
+            <p>Use animated cards and sticky visual panels to explain the offer while keeping the viewer engaged through scroll-based progression.</p>
+          </article>
+          <article class="scene reveal">
+            <h3>Scene 03: convert</h3>
+            <p>Finish with a high-contrast CTA, clear copy, and confident motion that makes the final step feel natural instead of forced.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section block" id="impact">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">Impact</div>
+          <h2 class="section-title">Built to impress fast.</h2>
+        </div>
+        <p class="section-lede">These numbers are part of the animated experience. The goal is to make the design feel alive while still staying clean and usable.</p>
+      </div>
+
+      <div class="stats-band">
+        <div class="stat reveal"><strong><span class="counter" data-target="92">0</span>%</strong><span>visual engagement lift</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="8">0</span>x</strong><span>more layered motion</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="24">0</span></strong><span>interactive components</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="100">0</span>%</strong><span>single-file HTML preview</span></div>
+      </div>
+    </section>
+
+    <section class="section block" id="start">
+      <div class="final-cta reveal">
+        <div class="section-kicker">Final frame</div>
+        <h2><span class="gradient-text">Motion is the message.</span></h2>
+        <p>This is closer to a modern animated agency landing page, with stronger visual direction, richer interactions, and a more premium feel than the first two samples.</p>
+        <a class="btn btn-primary" href="#top">Replay the experience</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>Advanced Motion Lab &copy; 2026. Designed as a high-motion interactive landing page.</footer>
+
+  <script>
+    const progress = document.getElementById('progress');
+    const cursorGlow = document.getElementById('cursorGlow');
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = 0;
+    let height = 0;
+    let particles = [];
+    let mouse = { x: innerWidth / 2, y: innerHeight / 2 };
+
+    function resizeCanvas() {
+      width = canvas.width = innerWidth * devicePixelRatio;
+      height = canvas.height = innerHeight * devicePixelRatio;
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      const count = Math.min(96, Math.max(44, Math.floor(innerWidth / 14)));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * innerWidth,
+        y: Math.random() * innerHeight,
+        vx: (Math.random() - 0.5) * 0.42,
+        vy: (Math.random() - 0.5) * 0.42,
+        r: Math.random() * 2.4 + 0.8,
+        hue: Math.random() > 0.5 ? 190 : 305
+      }));
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 140) {
+          p.x += dx / 220;
+          p.y += dy / 220;
+        }
+        if (p.x < -20) p.x = innerWidth + 20;
+        if (p.x > innerWidth + 20) p.x = -20;
+        if (p.y < -20) p.y = innerHeight + 20;
+        if (p.y > innerHeight + 20) p.y = -20;
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 100%, 70%, .62)`;
+        ctx.shadowColor = `hsla(${p.hue}, 100%, 70%, .9)`;
+        ctx.shadowBlur = 16;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i];
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 116) {
+            ctx.strokeStyle = `rgba(255,255,255,${(1 - d / 116) * 0.13})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          if (entry.target.classList.contains('scene')) entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.22, rootMargin: '0px 0px -70px 0px' });
+
+    document.querySelectorAll('.reveal, .scene').forEach((el) => revealObserver.observe(el));
+
+    const counters = new Set();
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting || counters.has(entry.target)) return;
+        counters.add(entry.target);
+        const target = Number(entry.target.dataset.target || 0);
+        const start = performance.now();
+        const duration = 1500 + Math.random() * 500;
+        function tick(now) {
+          const p = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - p, 3);
+          entry.target.textContent = Math.round(target * eased);
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.4 });
+
+    document.querySelectorAll('.counter').forEach((counter) => counterObserver.observe(counter));
+
+    document.querySelectorAll('.tilt').forEach((card) => {
+      card.addEventListener('pointermove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rx = ((y / rect.height) - 0.5) * -9;
+        const ry = ((x / rect.width) - 0.5) * 9;
+        card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
+        card.style.setProperty('--mx', `${(x / rect.width) * 100}%`);
+        card.style.setProperty('--my', `${(y / rect.height) * 100}%`);
+      });
+      card.addEventListener('pointerleave', () => {
+        card.style.transform = '';
+      });
+    });
+
+    function onScroll() {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const percent = max > 0 ? (scrollY / max) * 100 : 0;
+      progress.style.width = percent + '%';
+      document.documentElement.style.setProperty('--scroll', scrollY);
+    }
+
+    addEventListener('pointermove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      cursorGlow.style.setProperty('--x', e.clientX + 'px');
+      cursorGlow.style.setProperty('--y', e.clientY + 'px');
+    }, { passive: true });
+
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    drawParticles();
+    onScroll();
+  </script>
+</body>
+</html>
