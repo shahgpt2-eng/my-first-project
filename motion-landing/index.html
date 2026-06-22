@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion Landing</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      background: #0a0a0a;
+      overflow-x: hidden;
+    }
+
+    /* Hero section with animated gradient background */
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #ff0080, #8000ff, #0080ff, #80ff00);
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+      z-index: -2;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero-content {
+      text-align: center;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s ease 0.5s forwards;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s ease 0.8s forwards;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s ease 1s forwards;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Sections with scroll-triggered animations */
+    section {
+      padding: 6rem 2rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .section-content {
+      max-width: 600px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      transition-delay: 0.2s;
+    }
+
+    .visible .section-title,
+    .visible .section-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Cards with hover animations */
+    .cards {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 280px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h3 {
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 2rem;
+      text-align: center;
+      background: #111;
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1>Motion That Moves You</h1>
+      <p>Scroll, hover, and experience modern web motion design.</p>
+      <a href="#features" class="cta-button">Explore Features</a>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2 class="section-title">Features</h2>
+    <div class="section-content">
+      <p>Each element animates as you scroll into view.</p>
+      <div class="cards">
+        <div class="card">
+          <h3>Scroll Animations</h3>
+          <p>Elements fade and slide in when they enter the viewport.</p>
+        </div>
+        <div class="card">
+          <h3>Hover Effects</h3>
+          <p>Cards lift and glow on hover for interactive feedback.</p>
+        </div>
+        <div class="card">
+          <h3>Background Motion</h3>
+          <p>Animated gradient background creates a dynamic feel.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Smooth Experience</h2>
+    <div class="section-content">
+      <p>This page uses native smooth scrolling and CSS animations for performance.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Motion Landing Example &copy; 2026</p>
+  </footer>
+
+  <script>
+    // Simple scroll-triggered animation
+    const observerOptions = {
+      threshold: 0.2,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.section-title, .section-content').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
