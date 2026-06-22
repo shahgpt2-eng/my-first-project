@@ -2,46 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advanced Motion Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#05050c" />
+  <title>Advanced Motion Lab | Mobile Optimized</title>
   <style>
     :root {
-      --bg: #04040a;
-      --panel: rgba(255, 255, 255, 0.07);
-      --panel-strong: rgba(255, 255, 255, 0.13);
-      --text: #f7f7ff;
-      --muted: rgba(247, 247, 255, 0.68);
+      --bg: #05050c;
+      --bg-2: #09091a;
+      --text: #f9f8ff;
+      --muted: rgba(249, 248, 255, 0.68);
       --line: rgba(255, 255, 255, 0.14);
-      --hot: #ff2cdf;
-      --cyan: #19d7ff;
-      --lime: #a7ff3c;
-      --violet: #8b5cff;
-      --orange: #ff9f43;
-      --radius: 28px;
-      --shadow: 0 30px 90px rgba(0, 0, 0, 0.44);
+      --glass: rgba(255, 255, 255, 0.075);
+      --glass-strong: rgba(255, 255, 255, 0.13);
+      --pink: #ff2cdf;
+      --cyan: #18ddff;
+      --lime: #b4ff3d;
+      --violet: #8f5cff;
+      --amber: #ffb340;
+      --radius: 30px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --nav-h: 72px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+      color-scheme: dark;
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html {
       scroll-behavior: smooth;
+      text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
       min-height: 100vh;
+      min-height: 100svh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 16% 10%, rgba(255, 44, 223, 0.22), transparent 28rem),
-        radial-gradient(circle at 82% 6%, rgba(25, 215, 255, 0.18), transparent 30rem),
-        radial-gradient(circle at 50% 80%, rgba(139, 92, 255, 0.22), transparent 42rem),
-        var(--bg);
+        radial-gradient(circle at 20% 8%, rgba(255, 44, 223, 0.24), transparent 26rem),
+        radial-gradient(circle at 85% 4%, rgba(24, 221, 255, 0.2), transparent 28rem),
+        radial-gradient(circle at 50% 90%, rgba(143, 92, 255, 0.28), transparent 36rem),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
       overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.55;
+      overscroll-behavior-y: contain;
     }
 
     body::before {
@@ -49,13 +60,13 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      opacity: 0.08;
       z-index: 1;
+      opacity: 0.08;
       background-image:
-        linear-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+        linear-gradient(rgba(255,255,255,.72) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.72) 1px, transparent 1px);
       background-size: 54px 54px;
-      mask-image: radial-gradient(circle at center, black, transparent 75%);
+      mask-image: radial-gradient(circle at 50% 18%, black, transparent 70%);
     }
 
     body::after {
@@ -64,170 +75,227 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      background: linear-gradient(rgba(255, 255, 255, 0.035) 50%, transparent 50%);
+      background: linear-gradient(rgba(255,255,255,.026) 50%, transparent 50%);
       background-size: 100% 4px;
       mix-blend-mode: overlay;
-      opacity: 0.35;
+      opacity: .32;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; border: 0; background: none; }
 
     .progress {
       position: fixed;
       top: 0;
       left: 0;
-      width: 0%;
       height: 4px;
+      width: 0%;
       z-index: 1000;
-      background: linear-gradient(90deg, var(--hot), var(--cyan), var(--lime));
-      box-shadow: 0 0 24px rgba(25, 215, 255, 0.75);
+      background: linear-gradient(90deg, var(--pink), var(--cyan), var(--lime));
+      box-shadow: 0 0 28px rgba(24, 221, 255, .72);
+    }
+
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: .75;
     }
 
     .cursor-glow {
       position: fixed;
-      width: 420px;
-      height: 420px;
-      left: -210px;
-      top: -210px;
+      left: -180px;
+      top: -180px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
       z-index: 0;
       pointer-events: none;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(25, 215, 255, 0.18), rgba(255, 44, 223, 0.1) 38%, transparent 66%);
+      background: radial-gradient(circle, rgba(24,221,255,.18), rgba(255,44,223,.1) 42%, transparent 70%);
       filter: blur(12px);
       transform: translate3d(var(--x, 50vw), var(--y, 50vh), 0);
     }
 
-    #particle-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.78;
-      z-index: 0;
-    }
-
     .nav {
       position: fixed;
-      top: 18px;
       left: 50%;
+      top: calc(12px + var(--safe-top));
+      width: min(1120px, calc(100% - 24px));
       transform: translateX(-50%);
-      width: min(1120px, calc(100% - 28px));
-      z-index: 100;
+      z-index: 120;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px 12px 18px;
+      min-height: var(--nav-h);
+      padding: 10px 12px 10px 16px;
       border: 1px solid var(--line);
       border-radius: 999px;
-      background: rgba(4, 4, 10, 0.62);
-      backdrop-filter: blur(22px);
-      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.22);
+      background: rgba(5, 5, 12, .68);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.28);
     }
 
     .brand {
-      display: flex;
-      gap: 10px;
+      display: inline-flex;
       align-items: center;
-      font-weight: 800;
-      letter-spacing: -0.04em;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 900;
+      letter-spacing: -.045em;
     }
 
     .brand-mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
       background:
-        radial-gradient(circle at 30% 30%, #fff, transparent 24%),
-        conic-gradient(from 90deg, var(--hot), var(--cyan), var(--lime), var(--violet), var(--hot));
-      box-shadow: 0 0 30px rgba(255, 44, 223, 0.42);
-      animation: spin 7s linear infinite;
+        radial-gradient(circle at 30% 28%, #fff, transparent 22%),
+        conic-gradient(from 120deg, var(--pink), var(--cyan), var(--lime), var(--violet), var(--pink));
+      box-shadow: 0 0 32px rgba(255,44,223,.45);
+      animation: spin 8s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .brand-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .nav-links {
       display: flex;
-      gap: 6px;
       align-items: center;
+      gap: 4px;
     }
 
-    .nav-links a {
-      padding: 10px 14px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      border-radius: 999px;
-      transition: 0.25s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
+    .nav-links a,
+    .nav-cta,
+    .menu-button,
     .btn {
+      min-height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      min-height: 48px;
-      padding: 0 20px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-      transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
-      font-weight: 700;
+      transition: transform .28s ease, background .28s ease, box-shadow .28s ease;
     }
 
-    .btn:hover {
-      transform: translateY(-4px);
-      background: rgba(255, 255, 255, 0.14);
-      box-shadow: 0 18px 45px rgba(25, 215, 255, 0.18);
+    .nav-links a {
+      padding: 0 14px;
+      color: var(--muted);
+      font-size: .9rem;
     }
 
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.08); }
+
+    .nav-cta,
     .btn-primary {
-      color: #020205;
-      background: linear-gradient(135deg, #fff, #bff9ff 38%, #cfff7c 100%);
-      border: 0;
+      color: #030309;
+      background: linear-gradient(135deg, #fff, #c7f8ff 38%, #d6ff83);
+      font-weight: 900;
+      box-shadow: 0 18px 50px rgba(24,221,255,.16);
+    }
+
+    .nav-cta { padding: 0 18px; }
+
+    .menu-button {
+      display: none;
+      width: 52px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.13);
+    }
+
+    .menu-button i,
+    .menu-button i::before,
+    .menu-button i::after {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 99px;
+      background: #fff;
+      transition: transform .26s ease, opacity .26s ease;
+      content: "";
+    }
+
+    .menu-button i::before { transform: translateY(-6px); }
+    .menu-button i::after { transform: translateY(4px); }
+    .menu-button.active i { transform: rotate(45deg); }
+    .menu-button.active i::before { transform: translateY(0) rotate(90deg); }
+    .menu-button.active i::after { opacity: 0; }
+
+    .mobile-menu {
+      position: fixed;
+      top: calc(var(--nav-h) + 28px + var(--safe-top));
+      left: 12px;
+      right: 12px;
+      z-index: 115;
+      padding: 14px;
+      display: none;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(5, 5, 12, .88);
+      backdrop-filter: blur(28px);
+      box-shadow: var(--shadow);
+      transform-origin: top center;
+      animation: menuIn .24s ease both;
+    }
+
+    .mobile-menu.open { display: grid; gap: 8px; }
+
+    @keyframes menuIn {
+      from { opacity: 0; transform: translateY(-10px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .mobile-menu a {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.86);
+      font-weight: 800;
     }
 
     .section {
       position: relative;
-      z-index: 3;
+      z-index: 4;
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
     }
 
     .hero {
+      min-height: 100vh;
       min-height: 100svh;
       display: grid;
-      grid-template-columns: 1.02fr 0.98fr;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
       align-items: center;
-      gap: clamp(2rem, 4vw, 5rem);
-      padding-top: 110px;
-      padding-bottom: 80px;
+      padding: calc(110px + var(--safe-top)) 0 76px;
     }
 
     .eyebrow {
+      width: fit-content;
       display: inline-flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 20px;
       padding: 9px 13px;
-      margin-bottom: 22px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255,255,255,.14);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.07);
-      color: rgba(255, 255, 255, 0.78);
-      font-size: 0.86rem;
-      letter-spacing: 0.08em;
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.78);
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .12em;
       text-transform: uppercase;
     }
 
@@ -236,29 +304,29 @@
       height: 10px;
       border-radius: 50%;
       background: var(--lime);
-      box-shadow: 0 0 0 0 rgba(167, 255, 60, 0.72);
-      animation: pulse 1.8s infinite;
+      box-shadow: 0 0 0 0 rgba(180,255,61,.72);
+      animation: pulse 1.7s infinite;
     }
 
     @keyframes pulse {
-      70% { box-shadow: 0 0 0 14px transparent; }
+      70% { box-shadow: 0 0 0 13px transparent; }
       100% { box-shadow: 0 0 0 0 transparent; }
     }
 
     h1, h2, h3 {
-      line-height: 0.96;
-      letter-spacing: -0.07em;
+      line-height: .96;
+      letter-spacing: -.07em;
     }
 
-    .hero h1 {
-      font-size: clamp(3.25rem, 9vw, 7.7rem);
-      max-width: 870px;
+    h1 {
+      max-width: 840px;
+      font-size: clamp(3.15rem, 8.5vw, 7.7rem);
       margin-bottom: 24px;
     }
 
     .gradient-text {
       color: transparent;
-      background: linear-gradient(110deg, #fff 5%, #83efff 28%, #ff73e8 55%, #caff5b 86%);
+      background: linear-gradient(110deg, #fff 4%, #85efff 26%, #ff74e8 58%, #d7ff62 86%);
       background-size: 220% 100%;
       background-clip: text;
       -webkit-background-clip: text;
@@ -271,242 +339,301 @@
     }
 
     .hero-copy {
-      max-width: 670px;
+      max-width: 640px;
+      margin-bottom: 28px;
       color: var(--muted);
-      font-size: clamp(1.02rem, 2vw, 1.22rem);
-      margin-bottom: 32px;
+      font-size: clamp(1rem, 2vw, 1.2rem);
     }
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 12px;
       align-items: center;
     }
 
-    .hero-meta {
-      display: flex;
-      gap: 26px;
-      flex-wrap: wrap;
-      margin-top: 38px;
-      color: var(--muted);
+    .btn {
+      position: relative;
+      min-height: 54px;
+      padding: 0 22px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 900;
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+      touch-action: manipulation;
     }
 
-    .hero-meta strong {
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.26), transparent);
+      transform: translateX(-120%);
+      transition: transform .6s ease;
+    }
+
+    .btn:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(24,221,255,.16); }
+    .btn:hover::after { transform: translateX(120%); }
+    .btn-primary { border: 0; background: linear-gradient(135deg, #fff, #bff7ff 40%, #d7ff70); }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 34px;
+      max-width: 650px;
+    }
+
+    .meta-card {
+      min-height: 112px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(20px);
+    }
+
+    .meta-card strong {
       display: block;
       color: var(--text);
-      font-size: 1.4rem;
-      letter-spacing: -0.04em;
+      font-size: 1.7rem;
+      line-height: 1;
+      letter-spacing: -.05em;
+      margin-bottom: 8px;
     }
 
-    .stage-wrap {
+    .meta-card span { color: var(--muted); font-size: .9rem; }
+
+    .phone-stage {
       position: relative;
-      min-height: 620px;
-      perspective: 1400px;
-      transform-style: preserve-3d;
+      min-height: 650px;
+      display: grid;
+      place-items: center;
+      perspective: 1200px;
     }
 
-    .stage-card {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      width: min(520px, 88vw);
-      height: 620px;
-      transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-36deg);
-      transform-style: preserve-3d;
-      border-radius: 42px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+    .phone-shell {
+      position: relative;
+      width: min(330px, 78vw);
+      aspect-ratio: 9 / 18.5;
+      border-radius: 44px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.18);
       background:
-        linear-gradient(140deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
-        radial-gradient(circle at 20% 20%, rgba(255, 44, 223, 0.28), transparent 32%),
-        radial-gradient(circle at 80% 50%, rgba(25, 215, 255, 0.25), transparent 32%),
-        rgba(255, 255, 255, 0.06);
-      box-shadow: var(--shadow), 0 0 100px rgba(139, 92, 255, 0.18);
-      overflow: hidden;
-      animation: floatCard 7s ease-in-out infinite;
-    }
-
-    @keyframes floatCard {
-      0%, 100% { transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-36deg) translateY(0); }
-      50% { transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-36deg) translateY(-22px); }
-    }
-
-    .stage-card::before {
-      content: "";
-      position: absolute;
-      inset: 28px;
-      border-radius: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(0, 0, 0, 0.16);
-    }
-
-    .stage-card::after {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background: conic-gradient(from 180deg, transparent, rgba(255, 255, 255, 0.38), transparent 30%);
-      animation: sweep 4.8s linear infinite;
-    }
-
-    @keyframes sweep {
-      to { transform: rotate(360deg); }
-    }
-
-    .orbit {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+        linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.04)),
+        rgba(255,255,255,.06);
+      box-shadow: var(--shadow), 0 0 90px rgba(143,92,255,.22);
+      transform: rotateX(9deg) rotateY(-13deg) rotateZ(2deg);
       transform-style: preserve-3d;
-      animation: orbitSpin 16s linear infinite;
+      animation: phoneFloat 7s ease-in-out infinite;
     }
 
-    .orbit.one {
-      width: 510px;
-      height: 510px;
-      transform: translate(-50%, -50%) rotateX(72deg) rotateY(14deg);
+    @keyframes phoneFloat {
+      0%,100% { transform: rotateX(9deg) rotateY(-13deg) rotateZ(2deg) translateY(0); }
+      50% { transform: rotateX(7deg) rotateY(-8deg) rotateZ(-1deg) translateY(-18px); }
     }
 
-    .orbit.two {
-      width: 390px;
-      height: 390px;
-      transform: translate(-50%, -50%) rotateX(62deg) rotateY(-28deg);
-      animation-duration: 10s;
-      animation-direction: reverse;
+    .phone-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 30% 10%, rgba(255,44,223,.4), transparent 34%),
+        radial-gradient(circle at 80% 30%, rgba(24,221,255,.38), transparent 34%),
+        linear-gradient(180deg, #0b0b18, #05050c);
+      border: 1px solid rgba(255,255,255,.14);
     }
 
-    .orbit.three {
-      width: 270px;
-      height: 270px;
-      transform: translate(-50%, -50%) rotateX(74deg) rotateY(48deg);
-      animation-duration: 8s;
-    }
-
-    @keyframes orbitSpin {
-      from { rotate: 0deg; }
-      to { rotate: 360deg; }
-    }
-
-    .orb {
+    .phone-notch {
       position: absolute;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      top: -11px;
+      top: 13px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--cyan);
-      box-shadow: 0 0 22px var(--cyan), 0 0 60px rgba(25, 215, 255, 0.6);
-    }
-
-    .orbit.two .orb { background: var(--hot); box-shadow: 0 0 22px var(--hot), 0 0 60px rgba(255, 44, 223, 0.5); }
-    .orbit.three .orb { background: var(--lime); box-shadow: 0 0 22px var(--lime), 0 0 60px rgba(167, 255, 60, 0.5); }
-
-    .floating-ui {
-      position: absolute;
-      display: grid;
-      gap: 9px;
-      padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 22px;
-      background: rgba(2, 2, 5, 0.68);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
-      animation: floatUi 5.6s ease-in-out infinite;
-    }
-
-    .floating-ui span {
-      display: block;
-      height: 8px;
+      width: 96px;
+      height: 24px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(0,0,0,.72);
+      z-index: 3;
+    }
+
+    .screen-orb {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.8), rgba(24,221,255,.38), transparent 72%);
+      filter: blur(2px);
+      left: 18px;
+      top: 86px;
+      animation: screenOrb 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes screenOrb {
+      to { transform: translate(88px, 250px) scale(.74); background: radial-gradient(circle, rgba(255,255,255,.82), rgba(255,44,223,.42), transparent 72%); }
+    }
+
+    .screen-card {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 24px;
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .screen-card.top {
+      top: 84px;
+      min-height: 152px;
+      padding: 18px;
+      animation: cardSlide 5.5s ease-in-out infinite;
+    }
+
+    .screen-card.bottom {
+      bottom: 24px;
+      min-height: 220px;
+      padding: 18px;
+      animation: cardSlide 6.5s ease-in-out infinite reverse;
+    }
+
+    @keyframes cardSlide {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .screen-line {
+      display: block;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      margin-bottom: 11px;
       overflow: hidden;
     }
 
-    .floating-ui span::before {
+    .screen-line::before {
       content: "";
       display: block;
+      width: var(--w, 70%);
       height: 100%;
-      width: var(--w);
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--hot), var(--cyan));
+      background: linear-gradient(90deg, var(--pink), var(--cyan), var(--lime));
+      animation: loadLine 3.6s ease-in-out infinite;
     }
 
-    .ui-one { width: 180px; top: 95px; left: 0; --w: 72%; }
-    .ui-two { width: 210px; right: 0; bottom: 110px; --w: 86%; animation-delay: -1.2s; }
-    .ui-three { width: 168px; right: 35px; top: 28px; --w: 58%; animation-delay: -2.2s; }
+    @keyframes loadLine {
+      0%, 100% { transform: translateX(-18%); }
+      50% { transform: translateX(24%); }
+    }
 
-    @keyframes floatUi {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-18px) rotate(1.5deg); }
+    .orbit-ring {
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50%;
+      animation: spin 14s linear infinite;
+      pointer-events: none;
+    }
+
+    .orbit-ring.one { width: 520px; height: 520px; }
+    .orbit-ring.two { width: 400px; height: 400px; animation-duration: 9s; animation-direction: reverse; }
+    .orbit-ring::after {
+      content: "";
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: var(--cyan);
+      box-shadow: 0 0 24px var(--cyan), 0 0 70px rgba(24,221,255,.6);
+    }
+    .orbit-ring.two::after { background: var(--pink); box-shadow: 0 0 24px var(--pink), 0 0 70px rgba(255,44,223,.55); }
+
+    .mobile-hint {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: .78rem;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
     .marquee {
       position: relative;
-      z-index: 3;
+      z-index: 4;
       display: flex;
-      width: 100%;
       overflow: hidden;
-      padding: 24px 0;
+      padding: 22px 0;
       border-block: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255,255,255,.04);
     }
 
     .marquee-track {
       display: flex;
-      flex-shrink: 0;
       gap: 18px;
       min-width: 100%;
-      animation: marquee 24s linear infinite;
+      flex-shrink: 0;
+      animation: marquee 26s linear infinite;
     }
 
     .marquee b {
-      font-size: clamp(2rem, 4vw, 4rem);
-      letter-spacing: -0.06em;
-      color: rgba(255, 255, 255, 0.15);
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
       white-space: nowrap;
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: -.07em;
+      color: rgba(255,255,255,.14);
+      -webkit-text-stroke: 1px rgba(255,255,255,.28);
     }
 
     @keyframes marquee {
-      from { transform: translateX(0); }
       to { transform: translateX(-50%); }
     }
 
-    .block {
-      padding: clamp(5rem, 9vw, 9rem) 0;
-    }
+    .block { padding: clamp(4.8rem, 9vw, 9rem) 0; }
 
     .section-head {
       display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
+      grid-template-columns: .95fr 1.05fr;
       gap: 2rem;
       align-items: end;
-      margin-bottom: 48px;
+      margin-bottom: 42px;
     }
 
-    .section-kicker {
+    .kicker {
+      margin-bottom: 14px;
       color: var(--lime);
-      font-size: 0.86rem;
+      font-size: .8rem;
+      font-weight: 950;
+      letter-spacing: .18em;
       text-transform: uppercase;
-      letter-spacing: 0.18em;
-      margin-bottom: 16px;
-      font-weight: 800;
     }
 
     .section-title {
-      font-size: clamp(2.6rem, 6vw, 5.8rem);
       max-width: 780px;
+      font-size: clamp(2.65rem, 6vw, 5.8rem);
     }
 
     .section-lede {
-      color: var(--muted);
-      font-size: clamp(1rem, 2vw, 1.17rem);
       max-width: 650px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.14rem);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
     }
 
@@ -516,18 +643,12 @@
       padding: 24px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background:
-        linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
-        rgba(255, 255, 255, 0.055);
-      backdrop-filter: blur(24px);
+      background: linear-gradient(155deg, rgba(255,255,255,.12), rgba(255,255,255,.035));
+      backdrop-filter: blur(22px);
       overflow: hidden;
       transform-style: preserve-3d;
-      transition: transform 0.35s ease, border-color 0.35s ease, background 0.35s ease;
-    }
-
-    .motion-card:hover {
-      border-color: rgba(255, 255, 255, 0.32);
-      background: rgba(255, 255, 255, 0.085);
+      transition: transform .35s ease, border-color .35s ease, background .35s ease;
+      touch-action: manipulation;
     }
 
     .motion-card::before {
@@ -535,35 +656,62 @@
       position: absolute;
       inset: -1px;
       opacity: 0;
-      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(25, 215, 255, 0.32), transparent 34%);
-      transition: opacity 0.3s ease;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(24,221,255,.32), transparent 36%);
+      transition: opacity .3s ease;
       pointer-events: none;
     }
 
-    .motion-card:hover::before {
-      opacity: 1;
+    .motion-card:active,
+    .motion-card:hover {
+      border-color: rgba(255,255,255,.34);
+      background: linear-gradient(155deg, rgba(255,255,255,.16), rgba(255,255,255,.055));
     }
+
+    .motion-card:hover::before,
+    .motion-card:active::before { opacity: 1; }
 
     .card-number {
       position: relative;
       z-index: 1;
-      width: 52px;
-      height: 52px;
+      width: 54px;
+      height: 54px;
       display: grid;
       place-items: center;
-      border-radius: 17px;
-      color: #030307;
+      border-radius: 18px;
+      color: #030309;
       background: linear-gradient(135deg, var(--cyan), var(--lime));
-      font-weight: 900;
-      box-shadow: 0 18px 48px rgba(25, 215, 255, 0.18);
+      box-shadow: 0 20px 55px rgba(24,221,255,.18);
+      font-weight: 950;
+    }
+
+    .mini-orbit {
+      position: absolute;
+      right: -70px;
+      top: -70px;
+      width: 215px;
+      height: 215px;
+      border: 1px dashed rgba(255,255,255,.2);
+      border-radius: 50%;
+      animation: spin 12s linear infinite;
+    }
+
+    .mini-orbit::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      left: 20px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--pink);
+      box-shadow: 0 0 24px var(--pink);
     }
 
     .motion-card h3 {
       position: relative;
       z-index: 1;
-      margin-top: 86px;
+      margin-top: 92px;
       font-size: 2rem;
-      letter-spacing: -0.055em;
     }
 
     .motion-card p {
@@ -573,69 +721,46 @@
       color: var(--muted);
     }
 
-    .mini-orbit {
-      position: absolute;
-      right: -70px;
-      top: -70px;
-      width: 210px;
-      height: 210px;
-      border-radius: 50%;
-      border: 1px dashed rgba(255, 255, 255, 0.2);
-      animation: spin 12s linear infinite;
-    }
-
-    .mini-orbit::after {
-      content: "";
-      position: absolute;
-      top: 25px;
-      left: 18px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--hot);
-      box-shadow: 0 0 24px var(--hot);
-    }
-
     .showcase {
       display: grid;
-      grid-template-columns: 0.82fr 1.18fr;
-      gap: 28px;
-      align-items: stretch;
+      grid-template-columns: .86fr 1.14fr;
+      gap: 26px;
+      align-items: start;
     }
 
-    .sticky-panel {
+    .sticky-visual {
       position: sticky;
-      top: 110px;
-      min-height: 620px;
+      top: calc(var(--nav-h) + 34px + var(--safe-top));
+      min-height: 630px;
       border: 1px solid var(--line);
-      border-radius: 36px;
+      border-radius: 38px;
       background:
-        radial-gradient(circle at 20% 10%, rgba(255, 44, 223, 0.18), transparent 36%),
-        radial-gradient(circle at 80% 20%, rgba(25, 215, 255, 0.18), transparent 34%),
-        rgba(255, 255, 255, 0.055);
+        radial-gradient(circle at 24% 18%, rgba(255,44,223,.2), transparent 34%),
+        radial-gradient(circle at 84% 26%, rgba(24,221,255,.2), transparent 34%),
+        rgba(255,255,255,.055);
       backdrop-filter: blur(24px);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
-    .device {
+    .visual-device {
       position: absolute;
-      inset: 42px;
+      inset: 34px;
       border-radius: 34px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(0, 0, 0, 0.36);
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.34);
       overflow: hidden;
     }
 
-    .device::before {
+    .visual-device::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, transparent 0 48%, rgba(255, 255, 255, 0.08) 49% 51%, transparent 52%),
-        linear-gradient(transparent 0 48%, rgba(255, 255, 255, 0.08) 49% 51%, transparent 52%);
-      background-size: 70px 70px;
-      opacity: 0.45;
+        linear-gradient(90deg, transparent 0 48%, rgba(255,255,255,.08) 49% 51%, transparent 52%),
+        linear-gradient(transparent 0 48%, rgba(255,255,255,.08) 49% 51%, transparent 52%);
+      background-size: 68px 68px;
+      opacity: .48;
     }
 
     .motion-path {
@@ -653,158 +778,178 @@
       stroke-dasharray: 1100;
       stroke-dashoffset: 1100;
       animation: drawPath 4s ease-in-out infinite alternate;
-      filter: drop-shadow(0 0 14px rgba(25, 215, 255, 0.6));
+      filter: drop-shadow(0 0 14px rgba(24,221,255,.65));
     }
 
-    @keyframes drawPath {
-      to { stroke-dashoffset: 0; }
-    }
+    @keyframes drawPath { to { stroke-dashoffset: 0; } }
 
     .kinetic-dot {
       position: absolute;
-      left: 10%;
-      top: 70%;
       width: 24px;
       height: 24px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 0 30px #fff, 0 0 80px var(--cyan);
+      box-shadow: 0 0 30px #fff, 0 0 86px var(--cyan);
       offset-path: path("M 40 430 C 160 120, 360 100, 440 260 S 240 520, 470 430");
       animation: moveDot 4s ease-in-out infinite alternate;
     }
 
-    @keyframes moveDot {
-      to { offset-distance: 100%; }
-    }
+    @keyframes moveDot { to { offset-distance: 100%; } }
 
-    .scroll-scenes {
+    .scene-list {
       display: grid;
-      gap: 24px;
+      gap: 20px;
     }
 
     .scene {
-      min-height: 360px;
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      padding: 34px;
-      background: linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
-      backdrop-filter: blur(18px);
+      position: relative;
+      min-height: 340px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: linear-gradient(150deg, rgba(255,255,255,.1), rgba(255,255,255,.035));
+      backdrop-filter: blur(18px);
       overflow: hidden;
-      position: relative;
     }
 
     .scene::before {
       content: "";
       position: absolute;
-      width: 260px;
-      height: 260px;
-      right: -70px;
-      top: -70px;
+      width: 250px;
+      height: 250px;
+      right: -80px;
+      top: -80px;
       border-radius: 50%;
-      background: radial-gradient(circle, var(--glow), transparent 65%);
-      filter: blur(4px);
-      opacity: 0.7;
-      transform: scale(var(--scene-scale, 0.6));
-      transition: transform 0.8s ease;
+      background: radial-gradient(circle, var(--glow), transparent 66%);
+      transform: scale(.62);
+      transition: transform .8s ease;
     }
 
-    .scene.active::before {
-      --scene-scale: 1;
-    }
-
-    .scene:nth-child(1) { --glow: rgba(255, 44, 223, 0.45); }
-    .scene:nth-child(2) { --glow: rgba(25, 215, 255, 0.45); }
-    .scene:nth-child(3) { --glow: rgba(167, 255, 60, 0.38); }
+    .scene.active::before { transform: scale(1.08); }
+    .scene:nth-child(1) { --glow: rgba(255,44,223,.46); }
+    .scene:nth-child(2) { --glow: rgba(24,221,255,.46); }
+    .scene:nth-child(3) { --glow: rgba(180,255,61,.38); }
 
     .scene h3 {
-      font-size: clamp(2rem, 3vw, 3rem);
-      margin-bottom: 14px;
       position: relative;
       z-index: 1;
+      margin-bottom: 14px;
+      font-size: clamp(2rem, 3vw, 3rem);
     }
 
     .scene p {
-      color: var(--muted);
-      max-width: 620px;
       position: relative;
       z-index: 1;
+      color: var(--muted);
+      max-width: 620px;
     }
+
+    .swipe-section { display: none; }
 
     .stats-band {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
     }
 
     .stat {
-      padding: 28px;
-      min-height: 210px;
-      border-radius: 30px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.055);
+      position: relative;
+      min-height: 205px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: rgba(255,255,255,.06);
       overflow: hidden;
-      position: relative;
     }
 
     .stat::after {
       content: "";
       position: absolute;
-      inset: auto -20% -40% -20%;
-      height: 120px;
-      background: linear-gradient(90deg, var(--hot), var(--cyan), var(--lime));
+      left: -20%;
+      right: -20%;
+      bottom: -42%;
+      height: 126px;
+      background: linear-gradient(90deg, var(--pink), var(--cyan), var(--lime));
       filter: blur(54px);
-      opacity: 0.22;
+      opacity: .24;
     }
 
     .stat strong {
       font-size: clamp(2.4rem, 5vw, 4.4rem);
-      line-height: 0.9;
-      letter-spacing: -0.06em;
+      line-height: .9;
+      letter-spacing: -.065em;
     }
 
-    .stat span {
-      color: var(--muted);
-      position: relative;
-      z-index: 1;
-    }
+    .stat span { position: relative; z-index: 1; color: var(--muted); }
 
     .final-cta {
       position: relative;
       overflow: hidden;
       padding: clamp(4rem, 7vw, 7rem);
-      border-radius: 46px;
       border: 1px solid var(--line);
-      background:
-        radial-gradient(circle at 18% 20%, rgba(255, 44, 223, 0.24), transparent 32%),
-        radial-gradient(circle at 86% 30%, rgba(25, 215, 255, 0.22), transparent 32%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+      border-radius: 46px;
       text-align: center;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255,44,223,.25), transparent 34%),
+        radial-gradient(circle at 86% 28%, rgba(24,221,255,.24), transparent 34%),
+        linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
       box-shadow: var(--shadow);
     }
 
     .final-cta h2 {
-      font-size: clamp(3rem, 8vw, 7rem);
       max-width: 960px;
-      margin: 0 auto 24px;
+      margin: 0 auto 22px;
+      font-size: clamp(3rem, 8vw, 7rem);
     }
 
     .final-cta p {
-      color: var(--muted);
       max-width: 660px;
-      margin: 0 auto 30px;
+      margin: 0 auto 28px;
+      color: var(--muted);
       font-size: 1.12rem;
+    }
+
+    .bottom-dock {
+      display: none;
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(12px + var(--safe-bottom));
+      z-index: 130;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 24px;
+      background: rgba(5, 5, 12, .78);
+      backdrop-filter: blur(26px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.36);
+    }
+
+    .bottom-dock a {
+      min-height: 50px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      font-size: .78rem;
+      font-weight: 850;
+      color: rgba(255,255,255,.72);
+    }
+
+    .bottom-dock a.active,
+    .bottom-dock a:active {
+      color: #030309;
+      background: linear-gradient(135deg, #fff, #c7f8ff, #d7ff83);
     }
 
     .reveal {
       opacity: 0;
-      transform: translateY(42px) scale(0.98);
-      transition: opacity 0.9s cubic-bezier(.2,.8,.2,1), transform 0.9s cubic-bezier(.2,.8,.2,1);
+      transform: translateY(42px) scale(.985);
+      transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1);
     }
 
     .reveal.in-view {
@@ -825,129 +970,269 @@
       animation-delay: var(--d, 0s);
     }
 
-    @keyframes lineIn {
-      to { transform: translateY(0); }
-    }
+    @keyframes lineIn { to { transform: translateY(0); } }
 
     footer {
       position: relative;
-      z-index: 3;
-      padding: 40px 0 56px;
-      color: var(--muted);
+      z-index: 4;
+      padding: 38px 18px calc(56px + var(--safe-bottom));
       text-align: center;
+      color: var(--muted);
     }
 
-    @media (max-width: 980px) {
-      .nav-links { display: none; }
-      .hero, .section-head, .showcase { grid-template-columns: 1fr; }
-      .stage-wrap { min-height: 520px; order: -1; }
-      .grid, .stats-band { grid-template-columns: 1fr 1fr; }
-      .sticky-panel { position: relative; top: auto; min-height: 520px; }
+    @media (max-width: 1040px) {
+      .hero,
+      .section-head,
+      .showcase { grid-template-columns: 1fr; }
+      .phone-stage { order: -1; min-height: 570px; }
+      .sticky-visual { position: relative; top: auto; min-height: 540px; }
+      .grid, .stats-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head { gap: 1rem; }
     }
 
-    @media (max-width: 620px) {
-      .nav { top: 10px; }
-      .brand span { display: none; }
-      .hero { padding-top: 100px; }
-      .stage-wrap { min-height: 430px; }
-      .stage-card { height: 470px; width: 360px; }
-      .orbit.one { width: 350px; height: 350px; }
-      .orbit.two { width: 270px; height: 270px; }
-      .orbit.three { width: 190px; height: 190px; }
-      .floating-ui { display: none; }
-      .grid, .stats-band { grid-template-columns: 1fr; }
-      .motion-card { min-height: 300px; }
-      .device { inset: 24px; }
-      .final-cta { padding: 3rem 1.2rem; border-radius: 30px; }
-      .hero-actions { flex-direction: column; align-items: stretch; }
-      .btn { width: 100%; }
+    @media (max-width: 760px) {
+      :root { --nav-h: 62px; --radius: 24px; }
+      body::before { background-size: 38px 38px; opacity: .055; }
+      .cursor-glow { display: none; }
+      .nav {
+        width: calc(100% - 20px);
+        min-height: var(--nav-h);
+        padding: 8px 9px 8px 12px;
+      }
+      .brand-mark { width: 36px; height: 36px; flex-basis: 36px; border-radius: 13px; }
+      .brand-text { max-width: 160px; font-size: .92rem; }
+      .nav-links, .nav-cta { display: none; }
+      .menu-button { display: inline-flex; }
+      .section { width: min(100% - 24px, 1180px); }
+      .hero {
+        min-height: auto;
+        padding: calc(92px + var(--safe-top)) 0 54px;
+        gap: 1.6rem;
+      }
+      .eyebrow {
+        max-width: 100%;
+        font-size: .68rem;
+        letter-spacing: .08em;
+        padding: 8px 11px;
+      }
+      h1 { font-size: clamp(3.05rem, 15vw, 5.4rem); margin-bottom: 18px; }
+      .hero-copy { font-size: 1rem; margin-bottom: 22px; }
+      .hero-actions { display: grid; grid-template-columns: 1fr; }
+      .btn { min-height: 56px; width: 100%; padding: 0 18px; }
+      .hero-meta { grid-template-columns: 1fr; gap: 10px; margin-top: 22px; }
+      .meta-card { min-height: 86px; padding: 16px; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+      .meta-card strong { margin: 0; font-size: 1.55rem; }
+      .phone-stage { min-height: 500px; overflow: hidden; }
+      .phone-shell {
+        width: min(300px, 74vw);
+        transform: rotateX(0deg) rotateY(-9deg) rotateZ(1deg);
+        animation: phoneFloatMobile 6s ease-in-out infinite;
+      }
+      @keyframes phoneFloatMobile {
+        0%,100% { transform: rotateX(0deg) rotateY(-8deg) rotateZ(1deg) translateY(0); }
+        50% { transform: rotateX(0deg) rotateY(7deg) rotateZ(-1deg) translateY(-12px); }
+      }
+      .orbit-ring.one { width: 370px; height: 370px; }
+      .orbit-ring.two { width: 290px; height: 290px; }
+      .mobile-hint { display: inline-flex; }
+      .marquee { padding: 16px 0; }
+      .marquee-track { animation-duration: 18s; }
+      .block { padding: 4.4rem 0; }
+      .section-title { font-size: clamp(2.5rem, 12vw, 4.4rem); }
+      .section-lede { font-size: .98rem; }
+      .grid, .stats-band { grid-template-columns: 1fr; gap: 14px; }
+      .motion-card { min-height: 292px; padding: 22px; border-radius: 24px; }
+      .motion-card h3 { margin-top: 76px; font-size: 1.72rem; }
+      .showcase { display: block; }
+      .sticky-visual { display: none; }
+      .scene-list { display: none; }
+      .swipe-section { display: block; margin-top: 24px; }
+      .swipe-track {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        padding: 0 4px 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .swipe-track::-webkit-scrollbar { display: none; }
+      .swipe-card {
+        flex: 0 0 min(84vw, 330px);
+        min-height: 330px;
+        scroll-snap-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: linear-gradient(150deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+        overflow: hidden;
+      }
+      .swipe-card::before {
+        content: "";
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        right: -72px;
+        top: -72px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--glow), transparent 66%);
+      }
+      .swipe-card:nth-child(1) { --glow: rgba(255,44,223,.46); }
+      .swipe-card:nth-child(2) { --glow: rgba(24,221,255,.46); }
+      .swipe-card:nth-child(3) { --glow: rgba(180,255,61,.38); }
+      .swipe-card h3, .swipe-card p { position: relative; z-index: 1; }
+      .swipe-card h3 { font-size: 2.1rem; margin-bottom: 12px; }
+      .swipe-card p { color: var(--muted); }
+      .swipe-label { margin-top: 10px; color: rgba(255,255,255,.58); font-size: .82rem; font-weight: 800; text-align: center; }
+      .stat { min-height: 155px; padding: 22px; }
+      .final-cta { padding: 3.2rem 1.2rem; border-radius: 30px; }
+      .final-cta p { font-size: 1rem; }
+      .bottom-dock { display: grid; grid-template-columns: repeat(4, 1fr); }
+      footer { padding-bottom: calc(96px + var(--safe-bottom)); }
+    }
+
+    @media (max-width: 390px) {
+      .brand-text { max-width: 122px; }
+      h1 { font-size: clamp(2.8rem, 14vw, 4.5rem); }
+      .phone-stage { min-height: 450px; }
+      .phone-shell { width: min(270px, 75vw); }
+      .orbit-ring.one { width: 320px; height: 320px; }
+      .orbit-ring.two { width: 250px; height: 250px; }
+      .screen-card.top { min-height: 128px; }
+      .screen-card.bottom { min-height: 178px; }
+      .section { width: calc(100% - 18px); }
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      .hero { min-height: auto; padding-top: calc(88px + var(--safe-top)); grid-template-columns: 1fr 1fr; }
+      .phone-stage { min-height: 420px; }
+      .phone-shell { width: min(230px, 32vw); }
+      .hero-meta { display: none; }
+      .bottom-dock { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+      #particles { display: none; }
     }
   </style>
 </head>
 <body>
   <div class="progress" id="progress"></div>
   <div class="cursor-glow" id="cursorGlow"></div>
-  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <canvas id="particles" aria-hidden="true"></canvas>
 
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <a class="brand" href="#top" aria-label="Advanced Motion Lab home">
-      <span class="brand-mark"></span>
-      <span>Advanced Motion Lab</span>
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">Advanced Motion Lab</span>
     </a>
-    <div class="nav-links">
+    <div class="nav-links" aria-label="Desktop navigation">
       <a href="#systems">Systems</a>
       <a href="#showcase">Showcase</a>
       <a href="#impact">Impact</a>
     </div>
-    <a class="btn btn-primary" href="#start">Start Motion</a>
+    <a class="nav-cta" href="#start">Start Motion</a>
+    <button class="menu-button" id="menuButton" aria-label="Open menu" aria-expanded="false"><i></i></button>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#systems">Motion systems <span>01</span></a>
+    <a href="#showcase">Scroll showcase <span>02</span></a>
+    <a href="#impact">Impact metrics <span>03</span></a>
+    <a href="#start">Final CTA <span>04</span></a>
+  </div>
 
   <main id="top">
     <section class="section hero">
-      <div class="hero-copy-wrap">
-        <div class="eyebrow"><span class="pulse-dot"></span> High-end interactive motion design</div>
+      <div>
+        <div class="eyebrow"><span class="pulse-dot"></span> Mobile-first cinematic motion</div>
         <h1>
-          <span class="split-line"><span style="--d:.05s">Turn static pages</span></span>
-          <span class="split-line"><span class="gradient-text" style="--d:.18s">into cinematic</span></span>
-          <span class="split-line"><span style="--d:.31s">web experiences.</span></span>
+          <span class="split-line"><span style="--d:.05s">Premium motion</span></span>
+          <span class="split-line"><span class="gradient-text" style="--d:.18s">built for phones</span></span>
+          <span class="split-line"><span style="--d:.31s">and desktops.</span></span>
         </h1>
-        <p class="hero-copy reveal">A premium landing page concept with canvas particles, kinetic typography, parallax layers, 3D cards, scrolling scenes, animated SVG motion paths, counters, and responsive micro-interactions.</p>
+        <p class="hero-copy reveal">A more serious animated landing page with mobile-safe layout, touch-friendly controls, optimized canvas particles, scroll reveals, swipe scenes, 3D phone visuals, counters, and reduced-motion support.</p>
         <div class="hero-actions reveal">
-          <a class="btn btn-primary" href="#showcase">View the motion system</a>
-          <a class="btn" href="#systems">Explore sections</a>
+          <a class="btn btn-primary" href="#showcase">View mobile motion</a>
+          <a class="btn" href="#systems">Explore design</a>
         </div>
         <div class="hero-meta reveal">
-          <div><strong class="counter" data-target="60">0</strong> fps-inspired motion</div>
-          <div><strong class="counter" data-target="14">0</strong> animated layers</div>
-          <div><strong class="counter" data-target="100">0</strong> responsive build</div>
+          <div class="meta-card"><strong><span class="counter" data-target="60">0</span></strong><span>fps-style movement</span></div>
+          <div class="meta-card"><strong><span class="counter" data-target="18">0</span></strong><span>animated UI layers</span></div>
+          <div class="meta-card"><strong><span class="counter" data-target="100">0</span>%</strong><span>responsive single file</span></div>
         </div>
       </div>
 
-      <div class="stage-wrap" aria-hidden="true">
-        <div class="stage-card"></div>
-        <div class="orbit one"><span class="orb"></span></div>
-        <div class="orbit two"><span class="orb"></span></div>
-        <div class="orbit three"><span class="orb"></span></div>
-        <div class="floating-ui ui-one"><span style="--w:72%"></span><span style="--w:48%"></span><span style="--w:86%"></span></div>
-        <div class="floating-ui ui-two"><span style="--w:86%"></span><span style="--w:52%"></span><span style="--w:68%"></span></div>
-        <div class="floating-ui ui-three"><span style="--w:58%"></span><span style="--w:74%"></span><span style="--w:42%"></span></div>
+      <div class="phone-stage" aria-hidden="true">
+        <div class="orbit-ring one"></div>
+        <div class="orbit-ring two"></div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="screen-orb"></div>
+            <div class="screen-card top">
+              <span class="screen-line" style="--w:82%"></span>
+              <span class="screen-line" style="--w:58%"></span>
+              <span class="screen-line" style="--w:72%"></span>
+              <span class="screen-line" style="--w:44%"></span>
+            </div>
+            <div class="screen-card bottom">
+              <span class="screen-line" style="--w:64%"></span>
+              <span class="screen-line" style="--w:88%"></span>
+              <span class="screen-line" style="--w:48%"></span>
+              <span class="screen-line" style="--w:76%"></span>
+              <span class="screen-line" style="--w:56%"></span>
+            </div>
+          </div>
+        </div>
+        <span class="mobile-hint">Tap cards and scroll</span>
       </div>
     </section>
 
     <section class="marquee" aria-hidden="true">
       <div class="marquee-track">
-        <b>PARALLAX</b><b>SCROLL REVEALS</b><b>3D HOVER</b><b>CANVAS PARTICLES</b><b>KINETIC UI</b><b>SVG MOTION</b>
-        <b>PARALLAX</b><b>SCROLL REVEALS</b><b>3D HOVER</b><b>CANVAS PARTICLES</b><b>KINETIC UI</b><b>SVG MOTION</b>
+        <b>MOBILE OPTIMIZED</b><b>SWIPE SCENES</b><b>TOUCH READY</b><b>3D PHONE UI</b><b>CANVAS MOTION</b><b>FAST FEEL</b>
+        <b>MOBILE OPTIMIZED</b><b>SWIPE SCENES</b><b>TOUCH READY</b><b>3D PHONE UI</b><b>CANVAS MOTION</b><b>FAST FEEL</b>
       </div>
     </section>
 
     <section class="section block" id="systems">
       <div class="section-head reveal">
         <div>
-          <div class="section-kicker">Design system</div>
-          <h2 class="section-title">Motion that feels expensive.</h2>
+          <div class="kicker">Motion system</div>
+          <h2 class="section-title">Advanced visuals with mobile discipline.</h2>
         </div>
-        <p class="section-lede">The page is built around motion principles that make a website feel polished: depth, timing, reveal hierarchy, responsive feedback, and interactive energy.</p>
+        <p class="section-lede">The design is now built around mobile performance, real tap targets, safe-area spacing, swipe behavior, clean stacked sections, and motion that still feels premium on small screens.</p>
       </div>
 
       <div class="grid">
         <article class="motion-card tilt reveal">
           <div class="mini-orbit"></div>
           <div class="card-number">01</div>
-          <h3>Depth layers</h3>
-          <p>Floating glass panels, orbiting elements, cursor light, particles, and gradient fields create an animated spatial environment.</p>
+          <h3>Responsive depth</h3>
+          <p>Desktop gets tilt, orbit, particles, and sticky visuals. Mobile gets simplified 3D, better spacing, swipe scenes, and lighter animation load.</p>
         </article>
         <article class="motion-card tilt reveal">
           <div class="mini-orbit"></div>
           <div class="card-number">02</div>
-          <h3>Scroll rhythm</h3>
-          <p>Each section reveals with staggered timing, sticky motion panels, progress tracking, and scene activation as the user scrolls.</p>
+          <h3>Touch-first UI</h3>
+          <p>Buttons, menu, cards, and bottom dock are sized for thumbs with safe-area support for modern phones and browser bars.</p>
         </article>
         <article class="motion-card tilt reveal">
           <div class="mini-orbit"></div>
           <div class="card-number">03</div>
-          <h3>Micro feedback</h3>
-          <p>Buttons lift, cards tilt, light follows the pointer, numbers count up, paths draw, and visual states react instantly.</p>
+          <h3>Performance tuning</h3>
+          <p>Particle count adjusts by device width and motion is reduced automatically for smaller screens or users who prefer less motion.</p>
         </article>
       </div>
     </section>
@@ -955,21 +1240,21 @@
     <section class="section block" id="showcase">
       <div class="section-head reveal">
         <div>
-          <div class="section-kicker">Scroll showcase</div>
-          <h2 class="section-title">A moving product story.</h2>
+          <div class="kicker">Showcase</div>
+          <h2 class="section-title">Scroll on desktop. Swipe on mobile.</h2>
         </div>
-        <p class="section-lede">A premium motion graphics page should not just move randomly. It should guide the eye, create suspense, and make each section feel like a scene.</p>
+        <p class="section-lede">The same story adapts by device. Desktop users see a sticky motion path. Mobile users get swipeable cinematic cards that feel natural on touch screens.</p>
       </div>
 
       <div class="showcase">
-        <div class="sticky-panel reveal">
-          <div class="device">
+        <div class="sticky-visual reveal">
+          <div class="visual-device">
             <svg class="motion-path" viewBox="0 0 520 560" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="motionGradient" x1="0" x2="1" y1="0" y2="1">
                   <stop offset="0%" stop-color="#ff2cdf" />
-                  <stop offset="45%" stop-color="#19d7ff" />
-                  <stop offset="100%" stop-color="#a7ff3c" />
+                  <stop offset="45%" stop-color="#18ddff" />
+                  <stop offset="100%" stop-color="#b4ff3d" />
                 </linearGradient>
               </defs>
               <path d="M 40 430 C 160 120, 360 100, 440 260 S 240 520, 470 430" />
@@ -978,19 +1263,37 @@
           </div>
         </div>
 
-        <div class="scroll-scenes">
+        <div class="scene-list">
           <article class="scene reveal">
             <h3>Scene 01: attract</h3>
-            <p>Open with a cinematic hero that instantly signals premium value through depth, glowing gradients, and continuous ambient movement.</p>
+            <p>Open with a cinematic phone-style hero, glowing layers, and visual depth that feels like an interactive product launch.</p>
           </article>
           <article class="scene reveal">
             <h3>Scene 02: explain</h3>
-            <p>Use animated cards and sticky visual panels to explain the offer while keeping the viewer engaged through scroll-based progression.</p>
+            <p>Use adaptive motion blocks to explain what the page does while keeping the scroll flow clean and easy to follow.</p>
           </article>
           <article class="scene reveal">
             <h3>Scene 03: convert</h3>
-            <p>Finish with a high-contrast CTA, clear copy, and confident motion that makes the final step feel natural instead of forced.</p>
+            <p>Finish with a strong CTA, thumb-friendly actions, animated statistics, and a layout that stays usable on every screen size.</p>
           </article>
+        </div>
+
+        <div class="swipe-section reveal">
+          <div class="swipe-track" aria-label="Swipeable mobile story cards">
+            <article class="swipe-card">
+              <h3>Attract</h3>
+              <p>Cinematic phone hero, active particles, glowing UI, and premium motion from the first screen.</p>
+            </article>
+            <article class="swipe-card">
+              <h3>Explain</h3>
+              <p>Swipeable scene cards keep the message clear without forcing mobile users through heavy sticky sections.</p>
+            </article>
+            <article class="swipe-card">
+              <h3>Convert</h3>
+              <p>Large CTAs, bottom dock navigation, and animated metrics guide the user toward action.</p>
+            </article>
+          </div>
+          <div class="swipe-label">Swipe sideways to preview the motion story</div>
         </div>
       </div>
     </section>
@@ -998,79 +1301,96 @@
     <section class="section block" id="impact">
       <div class="section-head reveal">
         <div>
-          <div class="section-kicker">Impact</div>
-          <h2 class="section-title">Built to impress fast.</h2>
+          <div class="kicker">Impact</div>
+          <h2 class="section-title">Sharper on mobile, richer on desktop.</h2>
         </div>
-        <p class="section-lede">These numbers are part of the animated experience. The goal is to make the design feel alive while still staying clean and usable.</p>
+        <p class="section-lede">This version has a stronger mobile strategy, not just smaller desktop design. It is lighter, easier to scroll, and more touch-friendly.</p>
       </div>
 
       <div class="stats-band">
-        <div class="stat reveal"><strong><span class="counter" data-target="92">0</span>%</strong><span>visual engagement lift</span></div>
-        <div class="stat reveal"><strong><span class="counter" data-target="8">0</span>x</strong><span>more layered motion</span></div>
-        <div class="stat reveal"><strong><span class="counter" data-target="24">0</span></strong><span>interactive components</span></div>
-        <div class="stat reveal"><strong><span class="counter" data-target="100">0</span>%</strong><span>single-file HTML preview</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="92">0</span>%</strong><span>mobile polish score</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="44">0</span></strong><span>minimum touch target pixels</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="3">0</span>x</strong><span>device-specific layouts</span></div>
+        <div class="stat reveal"><strong><span class="counter" data-target="100">0</span>%</strong><span>single-file preview</span></div>
       </div>
     </section>
 
     <section class="section block" id="start">
       <div class="final-cta reveal">
-        <div class="section-kicker">Final frame</div>
-        <h2><span class="gradient-text">Motion is the message.</span></h2>
-        <p>This is closer to a modern animated agency landing page, with stronger visual direction, richer interactions, and a more premium feel than the first two samples.</p>
+        <div class="kicker">Final frame</div>
+        <h2><span class="gradient-text">Motion that works on phones.</span></h2>
+        <p>This upgraded version keeps the premium visual energy but makes the mobile experience smoother, faster, easier to use, and more advanced.</p>
         <a class="btn btn-primary" href="#top">Replay the experience</a>
       </div>
     </section>
   </main>
 
-  <footer>Advanced Motion Lab &copy; 2026. Designed as a high-motion interactive landing page.</footer>
+  <nav class="bottom-dock" aria-label="Mobile quick navigation">
+    <a href="#top" class="active">Top</a>
+    <a href="#systems">System</a>
+    <a href="#showcase">Swipe</a>
+    <a href="#impact">Stats</a>
+  </nav>
+
+  <footer>Advanced Motion Lab &copy; 2026. Mobile optimized interactive landing page.</footer>
 
   <script>
     const progress = document.getElementById('progress');
     const cursorGlow = document.getElementById('cursorGlow');
-    const canvas = document.getElementById('particle-canvas');
+    const menuButton = document.getElementById('menuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
-    let width = 0;
-    let height = 0;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
     let particles = [];
     let mouse = { x: innerWidth / 2, y: innerHeight / 2 };
+    let rafPending = false;
 
     function resizeCanvas() {
-      width = canvas.width = innerWidth * devicePixelRatio;
-      height = canvas.height = innerHeight * devicePixelRatio;
+      const dpr = Math.min(devicePixelRatio || 1, isCoarse ? 1.5 : 2);
+      canvas.width = Math.floor(innerWidth * dpr);
+      canvas.height = Math.floor(innerHeight * dpr);
       canvas.style.width = innerWidth + 'px';
       canvas.style.height = innerHeight + 'px';
-      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-      const count = Math.min(96, Math.max(44, Math.floor(innerWidth / 14)));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const mobile = innerWidth < 760;
+      const count = reduceMotion ? 0 : mobile ? Math.min(34, Math.max(20, Math.floor(innerWidth / 12))) : Math.min(96, Math.max(52, Math.floor(innerWidth / 14)));
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * innerWidth,
         y: Math.random() * innerHeight,
-        vx: (Math.random() - 0.5) * 0.42,
-        vy: (Math.random() - 0.5) * 0.42,
-        r: Math.random() * 2.4 + 0.8,
+        vx: (Math.random() - 0.5) * (mobile ? 0.28 : 0.42),
+        vy: (Math.random() - 0.5) * (mobile ? 0.28 : 0.42),
+        r: Math.random() * (mobile ? 1.8 : 2.4) + 0.7,
         hue: Math.random() > 0.5 ? 190 : 305
       }));
     }
 
     function drawParticles() {
+      if (reduceMotion) return;
       ctx.clearRect(0, 0, innerWidth, innerHeight);
+      const linkDistance = innerWidth < 760 ? 82 : 116;
+      const reactDistance = innerWidth < 760 ? 0 : 140;
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 140) {
-          p.x += dx / 220;
-          p.y += dy / 220;
+        if (reactDistance) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < reactDistance) {
+            p.x += dx / 230;
+            p.y += dy / 230;
+          }
         }
         if (p.x < -20) p.x = innerWidth + 20;
         if (p.x > innerWidth + 20) p.x = -20;
         if (p.y < -20) p.y = innerHeight + 20;
         if (p.y > innerHeight + 20) p.y = -20;
         ctx.beginPath();
-        ctx.fillStyle = `hsla(${p.hue}, 100%, 70%, .62)`;
+        ctx.fillStyle = `hsla(${p.hue}, 100%, 70%, .58)`;
         ctx.shadowColor = `hsla(${p.hue}, 100%, 70%, .9)`;
-        ctx.shadowBlur = 16;
+        ctx.shadowBlur = innerWidth < 760 ? 8 : 16;
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
@@ -1082,8 +1402,8 @@
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 116) {
-            ctx.strokeStyle = `rgba(255,255,255,${(1 - d / 116) * 0.13})`;
+          if (d < linkDistance) {
+            ctx.strokeStyle = `rgba(255,255,255,${(1 - d / linkDistance) * 0.12})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -1095,6 +1415,44 @@
       requestAnimationFrame(drawParticles);
     }
 
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const percent = max > 0 ? (scrollY / max) * 100 : 0;
+      progress.style.width = percent + '%';
+      rafPending = false;
+    }
+
+    addEventListener('scroll', () => {
+      if (!rafPending) {
+        requestAnimationFrame(updateScroll);
+        rafPending = true;
+      }
+    }, { passive: true });
+
+    addEventListener('pointermove', (event) => {
+      mouse.x = event.clientX;
+      mouse.y = event.clientY;
+      if (!isCoarse) {
+        cursorGlow.style.setProperty('--x', event.clientX + 'px');
+        cursorGlow.style.setProperty('--y', event.clientY + 'px');
+      }
+    }, { passive: true });
+
+    menuButton.addEventListener('click', () => {
+      const open = !mobileMenu.classList.contains('open');
+      mobileMenu.classList.toggle('open', open);
+      menuButton.classList.toggle('active', open);
+      menuButton.setAttribute('aria-expanded', String(open));
+    });
+
+    mobileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        menuButton.classList.remove('active');
+        menuButton.setAttribute('aria-expanded', 'false');
+      });
+    });
+
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -1102,18 +1460,18 @@
           if (entry.target.classList.contains('scene')) entry.target.classList.add('active');
         }
       });
-    }, { threshold: 0.22, rootMargin: '0px 0px -70px 0px' });
+    }, { threshold: 0.2, rootMargin: '0px 0px -56px 0px' });
 
     document.querySelectorAll('.reveal, .scene').forEach((el) => revealObserver.observe(el));
 
-    const counters = new Set();
+    const counted = new Set();
     const counterObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting || counters.has(entry.target)) return;
-        counters.add(entry.target);
+        if (!entry.isIntersecting || counted.has(entry.target)) return;
+        counted.add(entry.target);
         const target = Number(entry.target.dataset.target || 0);
         const start = performance.now();
-        const duration = 1500 + Math.random() * 500;
+        const duration = innerWidth < 760 ? 1100 : 1650;
         function tick(now) {
           const p = Math.min(1, (now - start) / duration);
           const eased = 1 - Math.pow(1 - p, 3);
@@ -1122,45 +1480,54 @@
         }
         requestAnimationFrame(tick);
       });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.35 });
 
     document.querySelectorAll('.counter').forEach((counter) => counterObserver.observe(counter));
 
     document.querySelectorAll('.tilt').forEach((card) => {
-      card.addEventListener('pointermove', (e) => {
+      card.addEventListener('pointermove', (event) => {
+        if (innerWidth < 760 || reduceMotion) return;
         const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
         const rx = ((y / rect.height) - 0.5) * -9;
         const ry = ((x / rect.width) - 0.5) * 9;
         card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
         card.style.setProperty('--mx', `${(x / rect.width) * 100}%`);
         card.style.setProperty('--my', `${(y / rect.height) * 100}%`);
       });
-      card.addEventListener('pointerleave', () => {
-        card.style.transform = '';
-      });
+      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+      card.addEventListener('touchstart', () => { card.style.setProperty('--mx', '50%'); card.style.setProperty('--my', '20%'); }, { passive: true });
     });
 
-    function onScroll() {
-      const max = document.documentElement.scrollHeight - innerHeight;
-      const percent = max > 0 ? (scrollY / max) * 100 : 0;
-      progress.style.width = percent + '%';
-      document.documentElement.style.setProperty('--scroll', scrollY);
-    }
+    const dockLinks = document.querySelectorAll('.bottom-dock a');
+    const dockObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id || 'top';
+        dockLinks.forEach((link) => {
+          const match = link.getAttribute('href') === '#' + id || (id === 'top' && link.getAttribute('href') === '#top');
+          link.classList.toggle('active', match);
+        });
+      });
+    }, { threshold: 0.32 });
 
-    addEventListener('pointermove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      cursorGlow.style.setProperty('--x', e.clientX + 'px');
-      cursorGlow.style.setProperty('--y', e.clientY + 'px');
-    }, { passive: true });
+    ['top','systems','showcase','impact'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) dockObserver.observe(el);
+    });
 
-    addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', resizeCanvas);
+    addEventListener('resize', () => {
+      clearTimeout(window.__resizeTimer);
+      window.__resizeTimer = setTimeout(() => {
+        resizeCanvas();
+        updateScroll();
+      }, 120);
+    });
+
     resizeCanvas();
     drawParticles();
-    onScroll();
+    updateScroll();
   </script>
 </body>
 </html>
